@@ -217,6 +217,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BEC845021DED859300A4A57A /* Build configuration list for PBXNativeTarget "Fuwari" */;
 			buildPhases = (
+				3013869727D033EC00FF8447 /* Run Script - swiftlint */,
 				3013869627D0304100FF8447 /* Run Script  - swift-format */,
 				BEC844EF1DED859300A4A57A /* Sources */,
 				BEC844F01DED859300A4A57A /* Frameworks */,
@@ -303,6 +304,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swift-format >/dev/null; then\n    swift-format -m format -i -r --configuration swift-format-configuration.json ${PROJECT_DIR}\nelse\n    echo \"error: swift-format not installed\"\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		3013869727D033EC00FF8447 /* Run Script - swiftlint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script - swiftlint";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n    # Relative path from the .xcodeproj which contains this script\n    swiftlint lint –config swiftlint.yml\nelse\n    echo \"error: SwiftLint not installed\"\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
