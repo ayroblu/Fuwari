@@ -19,7 +19,8 @@ class ScreenshotManager: NSObject {
     }
 
     func startCapture() {
-        let fileUrl = FileManager.default.temporaryDirectory.appendingPathComponent("fuwari-temporary-screenshot.png")
+        let fileUrl = FileManager.default.temporaryDirectory.appendingPathComponent(
+            "fuwari-temporary-screenshot.png")
         let captureProcess = Process()
         let pipe = Pipe()
         captureProcess.launchPath = "/usr/sbin/screencapture"
@@ -40,13 +41,14 @@ class ScreenshotManager: NSObject {
 
     func extractCoordinates(str: String) -> NSRect? {
         // Note, not found when capturing a window, rather than a selection
-        let capturePattern = #"captureRect = \((?<x>[\d.]+), (?<y>[\d.]+), (?<width>[\d.]+), (?<height>[\d.]+)\)"#
+        let capturePattern =
+            #"captureRect = \((?<x>[\d.]+), (?<y>[\d.]+), (?<width>[\d.]+), (?<height>[\d.]+)\)"#
 
         guard let match = Regex.match(str: str, regexPattern: capturePattern) else {
             return nil
         }
 
-        let getIntFromRegexGroup = {(name: String) throws -> Int in
+        let getIntFromRegexGroup = { (name: String) throws -> Int in
             Int(round(Float(try Regex.getGroup(match: match, name: name, str: str))!))
         }
 

@@ -11,28 +11,31 @@ import Cocoa
 class AboutWindowController: NSWindowController {
 
     static let shared = AboutWindowController(windowNibName: "AboutWindowController")
-    
+
     @IBOutlet private weak var versionTextField: NSTextField! {
         didSet {
-            if let versionString = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
+            if let versionString = Bundle.main.object(
+                forInfoDictionaryKey: "CFBundleShortVersionString")
+                as? String
+            {
                 versionTextField.stringValue = "v\(versionString)"
             }
         }
     }
-    
+
     override func showWindow(_ sender: Any?) {
         super.showWindow(sender)
         window?.makeKeyAndOrderFront(self)
     }
-    
+
     @IBAction private func didTouchFuwariButton(_ sender: NSButton) {
         NSWorkspace.shared.open(URL(string: "https://github.com/kentya6/Fuwari")!)
     }
-    
+
     @IBAction private func didTouchTwitterButton(_ sender: NSButton) {
         NSWorkspace.shared.open(URL(string: "https://twitter.com/kentya6")!)
     }
-    
+
     @IBAction private func didTouchGitHubButton(_ sender: NSButton) {
         NSWorkspace.shared.open(URL(string: "https://github.com/kentya6")!)
     }

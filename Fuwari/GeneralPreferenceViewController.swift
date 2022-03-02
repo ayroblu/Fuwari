@@ -10,20 +10,20 @@ import Cocoa
 
 class GeneralPreferenceViewController: NSViewController {
     private let defaults = UserDefaults.standard
-    
+
     @IBOutlet weak var movingOpacityValue: NSTextField!
-    
+
     @IBAction func sliderValue(_ sender: NSSlider) {
         movingOpacityValue.stringValue = toPercentageString(sender.floatValue)
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         let movingOpacity = defaults.float(forKey: Constants.UserDefaults.movingOpacity)
         movingOpacityValue.stringValue = toPercentageString(movingOpacity)
     }
-    
+
     private func toPercentageString(_ value: Float) -> String {
         return String(Int(value * 100)) + "%"
     }

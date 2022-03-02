@@ -11,7 +11,7 @@ import Cocoa
 class PreferencesWindowController: NSWindowController {
 
     static let shared = PreferencesWindowController(windowNibName: "PreferencesWindowController")
-    
+
     @IBOutlet fileprivate weak var toolBar: NSView!
     @IBOutlet fileprivate weak var generalImageView: NSImageView!
     @IBOutlet fileprivate weak var shortcutImageView: NSImageView!
@@ -19,11 +19,14 @@ class PreferencesWindowController: NSWindowController {
     @IBOutlet fileprivate weak var shortcutTextField: NSTextField!
     @IBOutlet fileprivate weak var generalButton: NSButton!
     @IBOutlet fileprivate weak var shortcutButton: NSButton!
-    
+
     fileprivate let defaults = UserDefaults.standard
-    fileprivate let viewController = [GeneralPreferenceViewController(nibName: "GeneralPreferenceViewController", bundle: nil),
-                                      ShortcutsPreferenceViewController(nibName: "ShortcutsPreferenceViewController", bundle: nil)]
-    
+    fileprivate let viewController = [
+        GeneralPreferenceViewController(nibName: "GeneralPreferenceViewController", bundle: nil),
+        ShortcutsPreferenceViewController(
+            nibName: "ShortcutsPreferenceViewController", bundle: nil),
+    ]
+
     override func windowDidLoad() {
         super.windowDidLoad()
         window?.collectionBehavior = .canJoinAllSpaces
@@ -31,15 +34,15 @@ class PreferencesWindowController: NSWindowController {
             window?.titlebarAppearsTransparent = true
         }
         toolBarItemTapped(generalButton)
-        generalButton.sendAction(on: .leftMouseDown)        
+        generalButton.sendAction(on: .leftMouseDown)
         shortcutButton.sendAction(on: .leftMouseDown)
     }
-    
+
     override func showWindow(_ sender: Any?) {
         super.showWindow(sender)
         window?.makeKeyAndOrderFront(self)
     }
-    
+
     @IBAction private func toolBarItemTapped(_ sender: NSButton) {
         selectedTab(sender.tag)
         switchView(sender.tag)
@@ -56,18 +59,18 @@ extension PreferencesWindowController: NSWindowDelegate {
 }
 
 // MARK: - Layout
-fileprivate extension PreferencesWindowController {
+extension PreferencesWindowController {
     private func resetImages() {
         generalImageView.image = NSImage(named: Constants.ImageName.generalOff)
         shortcutImageView.image = NSImage(named: Constants.ImageName.shortcutOff)
-        
+
         generalTextField.textColor = .tabTitle
         shortcutTextField.textColor = .tabTitle
     }
-    
-    func selectedTab(_ index: Int) {
+
+    fileprivate func selectedTab(_ index: Int) {
         resetImages()
-        
+
         switch index {
         case 0:
             generalImageView.image = NSImage(named: Constants.ImageName.generalOn)
@@ -78,8 +81,8 @@ fileprivate extension PreferencesWindowController {
         default: break
         }
     }
-    
-    func switchView(_ index: Int) {
+
+    fileprivate func switchView(_ index: Int) {
         let newView = viewController[index].view
         // Remove current views without toolbar
         window?.contentView?.subviews.forEach { view in
@@ -91,7 +94,7 @@ fileprivate extension PreferencesWindowController {
         let frame = window!.frame
         var newFrame = window!.frameRect(forContentRect: newView.frame)
         newFrame.origin = frame.origin
-        newFrame.origin.y +=  frame.height - newFrame.height - toolBar.frame.height
+        newFrame.origin.y += frame.height - newFrame.height - toolBar.frame.height
         newFrame.size.height += toolBar.frame.height
         window?.setFrame(newFrame, display: true)
         window?.contentView?.addSubview(newView)

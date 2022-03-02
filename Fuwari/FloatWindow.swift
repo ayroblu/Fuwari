@@ -6,9 +6,9 @@
 //  Copyright © 2016年 AppKnop. All rights reserved.
 //
 
+import Carbon
 import Cocoa
 import Magnet
-import Carbon
 
 protocol FloatDelegate: AnyObject {
     func save(floatWindow: FloatWindow, image: CGImage)
@@ -21,7 +21,7 @@ class FloatWindow: NSWindow {
     override var canBecomeMain: Bool { return true }
 
     weak var floatDelegate: FloatDelegate? = nil
-    
+
     private var closeButton: NSButton!
     private var originalRect = NSRect()
     private var popUpLabel = NSTextField()
@@ -33,8 +33,12 @@ class FloatWindow: NSWindow {
     private let maxWindowScale = CGFloat(2.5)
     private let closeButtonOpacity = CGFloat(0.5)
     private let closeButtonOpacityDuration = TimeInterval(0.3)
-    
-    init(contentRect: NSRect, styleMask style: NSWindow.StyleMask = [.borderless, .resizable], backing bufferingType: NSWindow.BackingStoreType = .buffered, defer flag: Bool = false, image: CGImage) {
+
+    init(
+        contentRect: NSRect, styleMask style: NSWindow.StyleMask = [.borderless, .resizable],
+        backing bufferingType: NSWindow.BackingStoreType = .buffered, defer flag: Bool = false,
+        image: CGImage
+    ) {
         super.init(contentRect: contentRect, styleMask: style, backing: bufferingType, defer: flag)
         contentView = FloatView(frame: contentRect)
         originalRect = contentRect
@@ -46,7 +50,7 @@ class FloatWindow: NSWindow {
         minSize = NSMakeSize(30, 30)
         collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
         animationBehavior = NSWindow.AnimationBehavior.alertPanel
-        
+
         popUpLabel = NSTextField(frame: NSRect(x: 10, y: 10, width: 80, height: 26))
         popUpLabel.textColor = .white
         popUpLabel.font = NSFont.boldSystemFont(ofSize: 20)
@@ -60,7 +64,7 @@ class FloatWindow: NSWindow {
         popUpLabel.isSelectable = false
         popUpLabel.alphaValue = 0.0
         contentView?.addSubview(popUpLabel)
-        
+
         let colorAttributeTitle = NSMutableAttributedString(string: "×")
         let range = NSMakeRange(0, colorAttributeTitle.length)
         colorAttributeTitle.addAttribute(.foregroundColor, value: NSColor.white, range: range)
@@ -72,45 +76,68 @@ class FloatWindow: NSWindow {
         closeButton.isBordered = false
         closeButton.alphaValue = 0.0
         contentView?.addSubview(closeButton)
-        
+
         menu = NSMenu()
-        menu?.addItem(NSMenuItem(title: LocalizedString.Copy.value, action: #selector(copyImage), keyEquivalent: "c"))
+        menu?.addItem(
+            NSMenuItem(
+                title: LocalizedString.Copy.value, action: #selector(copyImage), keyEquivalent: "c")
+        )
         menu?.addItem(NSMenuItem.separator())
-        menu?.addItem(NSMenuItem(title: LocalizedString.Save.value, action: #selector(saveImage), keyEquivalent: "s"))
+        menu?.addItem(
+            NSMenuItem(
+                title: LocalizedString.Save.value, action: #selector(saveImage), keyEquivalent: "s")
+        )
         menu?.addItem(NSMenuItem.separator())
-        menu?.addItem(NSMenuItem(title: LocalizedString.Upload.value, action: #selector(uploadImage), keyEquivalent: ""))
+        menu?.addItem(
+            NSMenuItem(
+                title: LocalizedString.Upload.value, action: #selector(uploadImage),
+                keyEquivalent: ""))
         menu?.addItem(NSMenuItem.separator())
-        menu?.addItem(NSMenuItem(title: LocalizedString.ZoomReset.value, action: #selector(resetWindowScale), keyEquivalent: "r"))
-        menu?.addItem(NSMenuItem(title: LocalizedString.ZoomIn.value, action: #selector(zoomInWindow), keyEquivalent: "+"))
-        menu?.addItem(NSMenuItem(title: LocalizedString.ZoomOut.value, action: #selector(zoomOutWindow), keyEquivalent: "-"))
+        menu?.addItem(
+            NSMenuItem(
+                title: LocalizedString.ZoomReset.value, action: #selector(resetWindowScale),
+                keyEquivalent: "r"))
+        menu?.addItem(
+            NSMenuItem(
+                title: LocalizedString.ZoomIn.value, action: #selector(zoomInWindow),
+                keyEquivalent: "+"))
+        menu?.addItem(
+            NSMenuItem(
+                title: LocalizedString.ZoomOut.value, action: #selector(zoomOutWindow),
+                keyEquivalent: "-"))
         menu?.addItem(NSMenuItem.separator())
-        menu?.addItem(NSMenuItem(title: LocalizedString.Close.value, action: #selector(closeWindow), keyEquivalent: "w"))
-        
+        menu?.addItem(
+            NSMenuItem(
+                title: LocalizedString.Close.value, action: #selector(closeWindow),
+                keyEquivalent: "w"))
+
         fadeWindow(isIn: true)
     }
-    
+
     func windowDidResize(_ notification: Notification) {
-        windowScale = frame.width > frame.height ? frame.height / originalRect.height : frame.width / originalRect.width
+        windowScale =
+            frame.width > frame.height
+            ? frame.height / originalRect.height : frame.width / originalRect.width
         closeButton.frame = NSRect(x: 4, y: frame.height - 20, width: 16, height: 16)
         showPopUp(text: "\(Int(windowScale * 100))%")
     }
-    
+
     override func keyDown(with event: NSEvent) {
         let combo = KeyCombo(QWERTYKeyCode: Int(event.keyCode), cocoaModifiers: event.modifierFlags)
         if event.modifierFlags.rawValue & NSEvent.ModifierFlags.command.rawValue != 0 {
             guard let char = combo?.characters.first else { return }
             switch char {
-            case "s": // ⌘S
+            case "s":  // ⌘S
                 saveImage()
-            case "c": // ⌘C
+            case "c":  // ⌘C
                 copyImage()
-            case "r": // ⌘R
+            case "r":  // ⌘R
                 resetWindowScale()
-            case "=", "^": // ⌘+
+            case "=", "^":  // ⌘+
                 zoomInWindow()
-            case "-": // ⌘-
+            case "-":  // ⌘-
                 zoomOutWindow()
-            case "w": // ⌘W
+            case "w":  // ⌘W
                 closeWindow()
             default:
                 break
@@ -119,41 +146,45 @@ class FloatWindow: NSWindow {
             closeWindow()
         }
     }
-    
+
     override func rightMouseDown(with event: NSEvent) {
         if let menu = menu, let contentView = contentView {
             NSMenu.popUpContextMenu(menu, with: event, for: contentView)
         }
     }
-    
+
     override func mouseEntered(with event: NSEvent) {
         NSAnimationContext.runAnimationGroup { context in
             context.duration = self.closeButtonOpacityDuration
             self.closeButton.animator().alphaValue = self.closeButtonOpacity
         }
     }
-    
+
     override func mouseExited(with event: NSEvent) {
         NSAnimationContext.runAnimationGroup { context in
             context.duration = self.closeButtonOpacityDuration
             self.closeButton.animator().alphaValue = 0.0
         }
     }
-    
+
     override func scrollWheel(with event: NSEvent) {
-        let min = CGFloat(0.1), max = CGFloat(1.0)
+        let min = CGFloat(0.1)
+        let max = CGFloat(1.0)
         if windowOpacity > min || windowOpacity < max {
             windowOpacity += event.deltaY * 0.005
-            if windowOpacity < min { windowOpacity = min }
-            else if windowOpacity > max { windowOpacity = max }
+            if windowOpacity < min {
+                windowOpacity = min
+            } else if windowOpacity > max {
+                windowOpacity = max
+            }
             alphaValue = windowOpacity
         }
     }
-    
+
     override func performClose(_ sender: Any?) {
         closeWindow()
     }
-  
+
     override func mouseDown(with event: NSEvent) {
         let movingOpacity = defaults.float(forKey: Constants.UserDefaults.movingOpacity)
         if movingOpacity < 1 {
@@ -161,7 +192,7 @@ class FloatWindow: NSWindow {
         }
         closeButton.alphaValue = 0.0
     }
-    
+
     override func mouseUp(with event: NSEvent) {
         alphaValue = windowOpacity
         closeButton.alphaValue = closeButtonOpacity
@@ -170,7 +201,7 @@ class FloatWindow: NSWindow {
             closeWindow()
         }
     }
-    
+
     @objc private func saveImage() {
         DispatchQueue.main.asyncAfter(deadline: .now()) {
             if let image = self.contentView?.layer?.contents {
@@ -179,7 +210,7 @@ class FloatWindow: NSWindow {
             }
         }
     }
-    
+
     @objc private func copyImage() {
         DispatchQueue.main.asyncAfter(deadline: .now()) {
             if let image = self.contentView?.layer?.contents {
@@ -192,7 +223,7 @@ class FloatWindow: NSWindow {
             }
         }
     }
-    
+
     @objc private func uploadImage() {
         DispatchQueue.main.asyncAfter(deadline: .now()) {
             if let image = self.contentView?.layer?.contents {
@@ -203,37 +234,52 @@ class FloatWindow: NSWindow {
             }
         }
     }
-    
+
     @objc private func zoomInWindow() {
         if windowScale < maxWindowScale {
             windowScale = floor((windowScale + windowScaleInterval) * 100) / 100
-            setFrame(NSRect(x: frame.origin.x - (originalRect.width / 2 * windowScaleInterval), y: frame.origin.y - (originalRect.height / 2 * windowScaleInterval), width: originalRect.width * windowScale, height: originalRect.height * windowScale), display: true, animate: true)
+            setFrame(
+                NSRect(
+                    x: frame.origin.x - (originalRect.width / 2 * windowScaleInterval),
+                    y: frame.origin.y - (originalRect.height / 2 * windowScaleInterval),
+                    width: originalRect.width * windowScale,
+                    height: originalRect.height * windowScale),
+                display: true, animate: true)
         }
-        
+
         showPopUp(text: "\(Int(windowScale * 100))%")
     }
-    
+
     @objc private func zoomOutWindow() {
         if windowScale > minWindowScale {
             windowScale = floor((windowScale - windowScaleInterval) * 100) / 100
-            setFrame(NSRect(x: frame.origin.x + (originalRect.width / 2 * windowScaleInterval), y: frame.origin.y + (originalRect.height / 2 * windowScaleInterval), width: originalRect.width * windowScale, height: originalRect.height * windowScale), display: true, animate: true)
+            setFrame(
+                NSRect(
+                    x: frame.origin.x + (originalRect.width / 2 * windowScaleInterval),
+                    y: frame.origin.y + (originalRect.height / 2 * windowScaleInterval),
+                    width: originalRect.width * windowScale,
+                    height: originalRect.height * windowScale),
+                display: true, animate: true)
         }
-        
+
         showPopUp(text: "\(Int(windowScale * 100))%")
     }
-    
+
     @objc fileprivate func resetWindowScale() {
         windowScale = CGFloat(1.0)
-        setFrame(NSRect(x: frame.origin.x, y: frame.origin.y, width: originalRect.width * windowScale, height: originalRect.height * windowScale), display: true, animate: true)
+        setFrame(
+            NSRect(
+                x: frame.origin.x, y: frame.origin.y, width: originalRect.width * windowScale,
+                height: originalRect.height * windowScale), display: true, animate: true)
     }
-    
+
     @objc private func closeWindow() {
         floatDelegate?.close(floatWindow: self)
     }
-    
+
     private func showPopUp(text: String, duration: Double = 0.5, interval: Double = 0.5) {
         popUpLabel.stringValue = text
-        
+
         NSAnimationContext.runAnimationGroup({ context in
             context.duration = duration
             context.timingFunction = CAMediaTimingFunction(name: .easeOut)
@@ -248,14 +294,14 @@ class FloatWindow: NSWindow {
             }
         }
     }
-    
+
     internal override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         if menuItem.action == #selector(resetWindowScale) {
             return windowScale != CGFloat(1.0)
         }
         return true
     }
-    
+
     func fadeWindow(isIn: Bool, completion: (() -> Void)? = nil) {
         makeKeyAndOrderFront(self)
         NSAnimationContext.beginGrouping()
