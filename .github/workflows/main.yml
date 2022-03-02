@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ ux-improvements-with-changed-profile ]
     tags:
     - 'v*'
   pull_request:
