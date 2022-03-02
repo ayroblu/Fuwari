@@ -217,6 +217,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BEC845021DED859300A4A57A /* Build configuration list for PBXNativeTarget "Fuwari" */;
 			buildPhases = (
+				3013869627D0304100FF8447 /* Run Script  - swift-format */,
 				BEC844EF1DED859300A4A57A /* Sources */,
 				BEC844F01DED859300A4A57A /* Frameworks */,
 				BEC844F11DED859300A4A57A /* Resources */,
@@ -283,6 +284,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3013869627D0304100FF8447 /* Run Script  - swift-format */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script  - swift-format";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swift-format >/dev/null; then\n    swift-format -m format -i -r ${PROJECT_DIR}\nelse\n    echo \"error: swift-format not installed\"\n    exit 1\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BEC844EF1DED859300A4A57A /* Sources */ = {
